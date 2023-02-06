@@ -20,6 +20,12 @@ create table cccat10.coupon (
 );
 INSERT INTO cccat10.coupon (code, percentage) values ('VALE20', 20);
 
+INSERT INTO cccat10.coupon (code, percentage, valid_date) values ('VALE10', 10, '2023-01-10');
+
 SELECT * FROM cccat10.coupon;
 
 DROP TABLE cccat10.coupon;
+
+ALTER TABLE cccat10.coupon ADD COLUMN valid_date DATE DEFAULT '2023-02-01';
+
+UPDATE cccat10.coupon SET valid_date = '2023-01-01' WHERE code like 'VALE10';

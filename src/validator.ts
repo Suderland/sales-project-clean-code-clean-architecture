@@ -19,7 +19,7 @@ function extractCheckDigit(cpf: string) {
   return cpf.substring(cpf.length-2, cpf.length);
 }
 
-export function validate (cpf: string) {
+export function validateCpf (cpf: string) {
   if (!cpf) return false;
   cpf = clean(cpf);
   if (isValidLength(cpf)) return false;
@@ -29,4 +29,9 @@ export function validate (cpf: string) {
   const nDigVerific = extractCheckDigit(cpf);
   const nDigResult = `${digit1}${digit2}`;
   return nDigVerific == nDigResult;
+}
+
+export function isDateExpired (date: Date): boolean {
+  const now = new Date();
+  return date < now;
 }
