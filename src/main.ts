@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { validateCpf, isDateExpired } from "./validator";
 import pgp from "pg-promise";
+
 const app = express();
 app.use(express.json());
 
