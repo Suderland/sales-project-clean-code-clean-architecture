@@ -1,4 +1,4 @@
-import { validateCpf, isDateExpired } from "../src/validator"
+import { validateCpf } from "../src/validator"
 
 test.each([
   '651.866.780-07',
@@ -24,10 +24,3 @@ test.each([
   const isValid = validateCpf(cpf);
   expect(isValid).toBeFalsy();
 });
-
-test.each([
-  new Date('2023-02-01')
-])('A data está expirada', async function(expiredDate) {
-  const isExpired = isDateExpired(expiredDate);
-  expect(isExpired).toBeTruthy();
-})

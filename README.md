@@ -18,7 +18,7 @@ npm init
 
 ## Adicionando dependências para Express, Typescript e Jest
 
-npm install -D typescript @types/jest ts-node ts-jest @types/express nodemon
+npm install -D typescript @types/jest ts-node ts-jest @types/express nodemon sinon @types/sinon
 npm install express jest pg-promise
 
 ## Iniciando arquivo de configurações do Typescript

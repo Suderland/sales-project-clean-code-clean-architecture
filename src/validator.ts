@@ -30,8 +30,3 @@ export function validateCpf (cpf: string) {
   const nDigResult = `${digit1}${digit2}`;
   return nDigVerific == nDigResult;
 }
-
-export function isDateExpired (date: Date): boolean {
-  const now = new Date();
-  return date < now;
-}

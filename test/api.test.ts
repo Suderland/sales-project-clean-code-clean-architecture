@@ -1,4 +1,7 @@
 import axios from "axios";
+axios.defaults.validateStatus = function (){
+  return true;
+}
 
 test('Não deve aceitar um pedido com CPF inválido', async function() {
   const input = {
@@ -6,6 +9,7 @@ test('Não deve aceitar um pedido com CPF inválido', async function() {
   }
   const response = await axios.post('http://localhost:3000/checkout', input);
   const output = response.data;
+  expect(response.status).toBe(422);
   expect(output.message).toBe('Invalid CPF');
 });
 
@@ -47,7 +51,7 @@ test('Deve criar um pedido com 3 produtos com cupom de desconto', async function
   expect(output.total).toBe(4872);
 });
 
-test('Não deve criar um pedido com cupom de desconto expirado', async function() {
+test('Deve criar um pedido com 3 produtos cupom de desconto expirado', async function() {
   const input = {
     cpf: '407.302.170-27',
     items: [
@@ -59,17 +63,15 @@ test('Não deve criar um pedido com cupom de desconto expirado', async function(
   }
   const response = await axios.post('http://localhost:3000/checkout', input);
   const output = response.data;
-  expect(output.message).toBe('Invalid coupon');
+  expect(output.total).toBe(6090);
 });
 
-test('Quantidade de um item não pode ser negativa', async function() {
+test('Não deve criar um pedido com quantidade negativa', async function() {
   const input = {
     cpf: '407.302.170-27',
     items: [
-      { idProduct: 1, quantity: -1 },
-      { idProduct: 2, quantity: 1 }
-    ],
-    coupon: 'VALE20'
+      { idProduct: 1, quantity: -1 }
+    ]
   }
   const response = await axios.post('http://localhost:3000/checkout', input);
   const output = response.data;
@@ -87,5 +89,50 @@ test('Item não pode ser repetido', async function() {
   }
   const response = await axios.post('http://localhost:3000/checkout', input);
   const output = response.data;
+  expect(response.status).toBe(422);
   expect(output.message).toBe('Repeated item');
+});
+
+test('Deve criar um pedido com 3 produtos calculando o frete', async function() {
+  const input = {
+    cpf: '407.302.170-27',
+    items: [
+      { idProduct: 1, quantity: 3 }
+    ],
+    from: '22060030',
+    to: '88015600'
+  }
+  const response = await axios.post('http://localhost:3000/checkout', input);
+  const output = response.data;
+  expect(output.freight).toBe(90);
+  expect(output.total).toBe(3090);
+});
+
+test('Não deve criar um pedido se o produto tiver alguma dimensão negativa', async function() {
+  const input = {
+    cpf: '407.302.170-27',
+    items: [
+      { idProduct: 4, quantity: 10 }
+    ],
+    coupon: 'VALE20'
+  }
+  const response = await axios.post('http://localhost:3000/checkout', input);
+  const output = response.data;
+  expect(response.status).toBe(422);
+  expect(output.message).toBe('Invalid dimension');
+});
+
+test('Deve criar um pedido com 1 produto calculando o frete com valor mínimo', async function() {
+  const input = {
+    cpf: '407.302.170-27',
+    items: [
+      { idProduct: 3, quantity: 1 }
+    ],
+    from: '22060030',
+    to: '88015600'
+  }
+  const response = await axios.post('http://localhost:3000/checkout', input);
+  const output = response.data;
+  expect(output.freight).toBe(10);
+  expect(output.total).toBe(40);
 });
