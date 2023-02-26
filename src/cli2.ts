@@ -1,4 +1,4 @@
-import Checkout from "./checkout";
+import Checkout from "./Checkout";
 
 const input: Input = { cpf:'', items:[] }
 process.stdin.on('data', async function (chunck) {
