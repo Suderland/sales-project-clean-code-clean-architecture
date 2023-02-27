@@ -56,9 +56,13 @@ export default class Checkout {
 		if (input.from && input.to) {
 			output.total += output.freight;
 		}
+		const year = new Date().getFullYear();
+		const sequence = await this.orderRepository.count();
+		const code = `${year}${new String(sequence).padStart(8, '0')}`;
 		const order = {
 			idOrder: input.uuid,
 			total: output.total,
+			code,
 			freight: output.freight,
 			cpf: input.cpf,
 			items: input.items
