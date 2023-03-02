@@ -1,4 +1,4 @@
-import Checkout from "../src/Checkout";
+import Checkout from "../src/application/usecase/Checkout";
 import sinon from "sinon";
 import CurrencyGatewayHttp from "../src/CurrencyGatewayHttp";
 import ProductRepositoryDatabase from "../src/ProductRepositoryDatabase";
@@ -6,8 +6,9 @@ import CouponRepositoryDatabase from "../src/CouponRepositoryDatabase";
 import CurrencyGateway from "../src/CurrencyGateway";
 import ProductRepository from "../src/ProductRepository";
 import crypto from "crypto";
-import GetOrder from "../src/GetOrder";
+import GetOrder from "../src/application/usecase/GetOrder";
 import OrderRepositoryDatabase from "../src/OrderRepositoryDatabase";
+import Product from "../src/domain/entity/Product";
 
 let checkout: Checkout;
 let getOrder: GetOrder;
@@ -142,7 +143,7 @@ test("Deve criar um pedido com 1 produto em dólar usando um stub", async functi
 		usd: 3
 	});
 	const stubProductRepository = sinon.stub(ProductRepositoryDatabase.prototype, "getProduct").resolves(
-		{ idProduct: 5, description: "A", price: 1000, width: 10, height: 10, length: 10, weight: 10, currency: "USD" }
+		new Product( 5, "A", 1000, 10, 10, 10, 10, "USD" )
 	)
 	const input = {
 		cpf: "407.302.170-27",
@@ -204,7 +205,7 @@ test("Deve criar um pedido com 1 produto em dólar usando um fake", async functi
 	}
 	const productRepository: ProductRepository = {
 		async getProduct (idProduct: number): Promise<any> {
-			return { idProduct: 6, description: "A", price: 1000, width: 10, height: 10, length: 10, weight: 10, currency: "USD" };
+			return new Product( 6, "A", 1000, 10, 10, 10, 10, "USD");
 		}
 	}
 	checkout = new Checkout(currencyGateway, productRepository);
