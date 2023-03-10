@@ -1,14 +1,12 @@
 import CouponRepository from "../repository/CouponRepository";
-import CouponRepositoryDatabase from "../../infra/repository/CouponRepositoryDatabase";
 import CurrencyGateway from "../gateway/CurrencyGateway";
-import CurrencyGatewayHttp from "../../infra/gateway/CurrencyGatewayHttp";
 import CurrencyTable from "../../domain/entity/CurrencyTable";
-import FreightCalculator from "../../domain/entity/FreightCalculator";
 import Order from "../../domain/entity/Order";
 import OrderRepository from "../repository/OrderRepository";
-import OrderRepositoryDatabase from "../../infra/repository/OrderRepositoryDatabase";
 import ProductRepository from "../repository/ProductRepository";
-import ProductRepositoryDatabase from "../../infra/repository/ProductRepositoryDatabase";
+import FreightGateway, { Input as FreightInput } from "../gateway/FreightGateway";
+import FreightGatewayHttp from "../../infra/gateway/FreightGatewayHttp";
+import AxiosAdapter from "../../infra/http/AxiosAdapter";
 
 export default class Checkout {
 
@@ -16,7 +14,8 @@ export default class Checkout {
 		readonly currencyGateway: CurrencyGateway,
 		readonly productRepository: ProductRepository,
 		readonly couponRepository: CouponRepository,
-		readonly orderRepository: OrderRepository
+		readonly orderRepository: OrderRepository,
+		readonly freightGateway: FreightGateway = new FreightGatewayHttp(new AxiosAdapter())
 	) {
 	} 
 
@@ -26,15 +25,16 @@ export default class Checkout {
 		currencyTable.addCurrency('USD', currency.usd);
 		const sequece = await this.orderRepository.count();
 		const order = new Order(input.uuid, input.cpf, currencyTable, sequece, new Date());
-		let freight = 0;
+		const freightInput: FreightInput = { items: [] };
 		if (input.items) {
 			for (const item of input.items) {
 				const product = await this.productRepository.getProduct(item.idProduct);
 				order.addItem(product, item.quantity);
-				const itemFreight = FreightCalculator.calculate(product, item.quantity);
-				freight += itemFreight;
+				freightInput.items.push( { width: product.width, height: product.height, length: product.length, weight: product.weight, quantity: item.quantity } );
 			}
 		}
+		const freightOutput = await this.freightGateway.calculateFreight(freightInput);
+		const freight = freightOutput.freight;
 		if (input.from && input.to) {
 			order.freight += freight;
 		}		
