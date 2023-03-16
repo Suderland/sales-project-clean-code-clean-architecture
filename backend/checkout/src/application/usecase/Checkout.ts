@@ -28,7 +28,7 @@ export default class Checkout {
 		currencyTable.addCurrency('USD', currency.usd);
 		const sequece = await this.orderRepository.count();
 		const order = new Order(input.uuid, input.cpf, currencyTable, sequece, new Date());
-		const freightInput: FreightInput = { items: [] };
+		const freightInput: FreightInput = { items: [], from: input.from, to: input.to };
 		if (input.items) {
 			for (const item of input.items) {
 				// const product = await this.productRepository.getProduct(item.idProduct);
