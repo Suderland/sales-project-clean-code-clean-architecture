@@ -15,6 +15,8 @@ import CouponRepository from "../../src/application/repository/CouponRepository"
 import OrderRepository from "../../src/application/repository/OrderRepository";
 import AxiosAdapter from "../../src/infra/http/AxiosAdapter";
 import CatalogGatewayHttp from "../../src/infra/gateway/CatalogGatewayHttp";
+import AuthDecorator from "../../src/application/decorator/AuthDecorator";
+import LogDecorator from "../../src/application/decorator/LogDecorator";
 
 let checkout: Checkout;
 let getOrder: GetOrder;
@@ -273,4 +275,36 @@ test("Deve criar um pedido com 1 produto em dólar usando um stub", async functi
 		const output = await checkout.execute(input);
 		expect(output.freight).toBe(22.446653340244893);
 		expect(output.total).toBe(1022.446653340244893);
+	});
+
+	test("Deve criar um pedido com 3 produtos com cupom de desconto somente se estiver autenticado", async function () {
+		const decoratedCheckout = new AuthDecorator(new LogDecorator(checkout));
+		const input = {
+			cpf: "407.302.170-27",
+			items: [
+				{ idProduct: 1, quantity: 1 },
+				{ idProduct: 2, quantity: 1 },
+				{ idProduct: 3, quantity: 3 }
+			],
+			coupon: "VALE20",
+			token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN1ZGVyQGdtYWlsLmNvbSIsImlhdCI6MTY3NzY3NTYwMDAwMCwiZXhwaXJlc0luIjoxMDAwMDAwfQ.kM7Bq9horY4Is_J_BKrlW8NVuHTBaFVphvmoRAGLhkA'
+		};
+		const output = await decoratedCheckout.execute(input);
+		expect(output.total).toBe(4872);
+	});
+
+	test("Não deve funcionar se o usuário não estiver autenticado", async function () {
+		// const decoratedCheckout = new AuthDecorator(checkout);
+		const decoratedCheckout = new AuthDecorator(new LogDecorator(checkout));
+		const input = {
+			cpf: "407.302.170-27",
+			items: [
+				{ idProduct: 1, quantity: 1 },
+				{ idProduct: 2, quantity: 1 },
+				{ idProduct: 3, quantity: 3 }
+			],
+			coupon: "VALE20",
+			token: 'eyJhbGciOXVCJ9.eyJlbWFpbCI6InN1ZGVyQGdtYWlsLmNvbSIsImlhdCI6MTY3NzY3NTYwMDAwMCwiZXhwaXJlc0luIjoxMDAwMDAwfQ.kM7Bq9horY4Is_J_BKrlW8NVuHTBaFVphvmoRAGLhkA'
+		};
+		expect(() => decoratedCheckout.execute(input)).rejects.toThrow(new Error('Auth error'));
 	});

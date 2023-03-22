@@ -9,8 +9,9 @@ import FreightGatewayHttp from "../../infra/gateway/FreightGatewayHttp";
 import AxiosAdapter from "../../infra/http/AxiosAdapter";
 import CatalogGateway from "../gateway/CatalogGateway";
 import CatalogGatewayHttp from "../../infra/gateway/CatalogGatewayHttp";
+import Usecase from "./Usecase";
 
-export default class Checkout {
+export default class Checkout implements Usecase {
 
 	constructor (
 		readonly currencyGateway: CurrencyGateway,
@@ -23,6 +24,14 @@ export default class Checkout {
 	} 
 
 	async execute (input: Input): Promise<Output> {
+		// quebra o Single Responsability Principle (SRP)
+		// if (input.token) {
+		// 	try {
+		// 		const payload = await this.authGateway.verify(input.token);
+		// 	} catch (e) {
+		// 		throw new Error('Auth error');	
+		// 	}			
+		// }
 		const currency = await this.currencyGateway.getCurrencies();
 		const currencyTable = new CurrencyTable();
 		currencyTable.addCurrency('USD', currency.usd);
@@ -61,7 +70,8 @@ type Input = {
 	items: { idProduct: number, quantity: number, price?: number }[],
 	coupon?: string,
 	from?: string,
-	to?: string
+	to?: string,
+	// token?: string
 }
 
 type Output = {
