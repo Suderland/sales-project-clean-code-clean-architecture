@@ -10,6 +10,8 @@ import AxiosAdapter from "../../infra/http/AxiosAdapter";
 import CatalogGateway from "../gateway/CatalogGateway";
 import CatalogGatewayHttp from "../../infra/gateway/CatalogGatewayHttp";
 import Usecase from "./Usecase";
+import StockGateway from "../gateway/StockGateway";
+import StockGatewayHttp from "../../infra/gateway/StockGatewayHttp";
 
 export default class Checkout implements Usecase {
 
@@ -19,7 +21,8 @@ export default class Checkout implements Usecase {
 		readonly couponRepository: CouponRepository,
 		readonly orderRepository: OrderRepository,
 		readonly freightGateway: FreightGateway = new FreightGatewayHttp(new AxiosAdapter()),
-		readonly catalogGateway: CatalogGateway = new CatalogGatewayHttp(new AxiosAdapter())
+		readonly catalogGateway: CatalogGateway = new CatalogGatewayHttp(new AxiosAdapter()),
+		readonly stockGateway: StockGateway = new StockGatewayHttp(new AxiosAdapter())
 	) {
 	} 
 
@@ -57,6 +60,7 @@ export default class Checkout implements Usecase {
 		}
 		let total = order.getTotal();
 		await this.orderRepository.save(order);
+		await this.stockGateway.decrementStock(input);
 		return {
 			total,
 			freight
