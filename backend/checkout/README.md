@@ -20,7 +20,7 @@ Run the following command to generate and start the server:
 
 `npm install -D typescript @types/jest ts-node ts-jest @types/express nodemon sinon @types/sinon`
 
-`npm install express jest pg-promise cors`
+`npm install express jest pg-promise cors amqplib @types/amqplib`
 
 Obs.: Alternativa ao Express:
 

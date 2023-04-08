@@ -6,22 +6,30 @@ import PgPromise from "./infra/database/PgPromiseAdapter";
 import AxiosAdapter from "./infra/http/AxiosAdapter";
 import ExpressAdapter from "./infra/http/ExpressAdapter";
 import HttpController from "./infra/http/HttpController";
+import QueueController from "./infra/queue/QueueController";
+import RabbitMQAdapter from "./infra/queue/RabbitMQAdapter";
 
-
-const stockEntries: StockEntry[] = [
-  new StockEntry(1, 'in', 20)
-];
-const stockEntryRepository: StockEntryRepository = {
-  async save (stockEntry: StockEntry) {
-    stockEntries.push(stockEntry);
-  },
-  async list (idProduct: number) {
-    return stockEntries.filter((stockEntry: StockEntry) => stockEntry.idProduct === idProduct);
+async function main() {
+  const stockEntries: StockEntry[] = [
+    new StockEntry(1, 'in', 20)
+  ];
+  const stockEntryRepository: StockEntryRepository = {
+    async save (stockEntry: StockEntry) {
+      stockEntries.push(stockEntry);
+    },
+    async list (idProduct: number) {
+      return stockEntries.filter((stockEntry: StockEntry) => stockEntry.idProduct === idProduct);
+    }
   }
+  
+  const decrementStock = new DecrementStock(stockEntryRepository);
+  const calculateStock = new CalculateStock(stockEntryRepository);
+  const httpServer = new ExpressAdapter();
+  new HttpController(httpServer, decrementStock, calculateStock);
+  const queue = new RabbitMQAdapter();
+  await queue.connect();
+  new QueueController(queue, decrementStock);
+  httpServer.listen(3005);  
 }
 
-const decrementStock = new DecrementStock(stockEntryRepository);
-const calculateStock = new CalculateStock(stockEntryRepository);
-const httpServer = new ExpressAdapter();
-new HttpController(httpServer, decrementStock, calculateStock);
-httpServer.listen(3005);
+main();

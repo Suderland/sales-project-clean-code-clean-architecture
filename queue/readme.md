@@ -14,5 +14,5 @@ First run the following command to install the dependencies:
 ## Run server
 
 Run the following command to generate and start the server:
-`npm run start` ou `yarn start`
+`npx ts-node Consumer.ts` ou `npx ts-node Producer.ts`
 
