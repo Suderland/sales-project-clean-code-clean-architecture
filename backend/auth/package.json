@@ -9,7 +9,7 @@
     "test-coverage": "npx jest --coverage",
     "main": "tsc && node dist/api",
     "main-tsnode": "npx ts-node src/api.ts",
-    "nodemon": "npx nodemon src/api.ts",
+    "nodemon": "npx nodemon src/main_api.ts",
     "cli": "npx ts-node src/cli2.ts"
   },
   "repository": {
