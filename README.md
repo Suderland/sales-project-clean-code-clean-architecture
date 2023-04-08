@@ -1,4 +1,4 @@
-# API de Vendas 
+# Sales application
 
 Project for the Clean Code and Clean Architecture course by Rodrigo Branas's class 10. Complete Sales application, from frontend to backend, divided into several microservices using TypeScript with Clean Code, Refactoring, TDD, OO, Ports and Adapters, Clean Architecture, Domain-Driven Design, Design Patterns, SOLID, Event-Driven Architecture, and CQRS. In the frontend, I used the Test-Driven Development technique and applied Ports and Adapters, Clean Architecture, OO, SOLID, and Design Patterns.
 
@@ -7,27 +7,27 @@ Project for the Clean Code and Clean Architecture course by Rodrigo Branas's cla
 First run the following command to install the dependencies:
 `npm install`
 
-# Iniciando o projeto NodeJS
+# Starting the NodeJS project
 
 `npm init`
 
-## Adicionando dependências para Express, Typescript e Jest
+## Adding dependencies for Express, Typescript and Jest
 
 `npm install -D typescript @types/jest ts-node ts-jest @types/express nodemon sinon @types/sinon`
 
 `npm install express jest pg-promise cors amqplib @types/amqplib`
 
-Obs.: Alternativa ao Express:
+Obs.: Alternative to Express:
 
 `npm install @hapi/hapi`
 
-Não precisou do `@types/hapi__hapi`
+Didn't need `@types/hapi__hapi`
 
-## Iniciando arquivo de configurações do Typescript
+## Starting Typescript settings file
 
 `npx tsc --init`
 
-## Iniciando arquivo de configurações do Jest
+## Starting Jest settings file
 
 `npx ts-jest config:init`
 
